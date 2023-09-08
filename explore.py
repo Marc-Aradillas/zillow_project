@@ -11,6 +11,33 @@ import prepare
 
 
 
+# ------------------------------- DATA DISTRIBUTION FUNCTION -----------------------------
+
+
+def dist_of_nums(df):
+    
+    for col in df.columns[df.dtypes != 'object']:
+
+        plt.figure()
+        sns.histplot(data = df, x = col)
+        plt.title(f'Distribution of {col}')
+        plt.show()
+
+
+# need to revisit
+
+# def dist_of_objects(df):
+    
+#     for col in df.columns[df.dtypes == 'object']:
+    
+#         plt.figure(df)
+#         sns.countplot(data = df, x = col)
+#         plt.title(f'Count of {col}')
+#         plt.show()
+
+
+
+
 # ------------------------------- VAR PAIRS FUNCTION --------------------------------------
 # defined function for plotting all variable pairs.
 def plot_variable_pairs(df):
@@ -32,7 +59,7 @@ def plot_variable_pairs(df):
 
 
 # ------------------------------- CAT|CONT VARS FUNCTION --------------------------------------
-def plot_categorical_and_continuous_vars(df, continuous_var, categorical_var):
+def plot_categorical_and_continuous_vars(df, continuous_var, categorical_var, n):
     """
     This function outputs three different plots for visualizing a categorical variable and a continuous variable.
 
@@ -49,16 +76,16 @@ def plot_categorical_and_continuous_vars(df, continuous_var, categorical_var):
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
     # Box plot of the continuous variable for each category of the categorical variable
-    sns.boxplot(x=categorical_var, y=continuous_var, data=df, ax=axes[0], bins=10)
+    sns.boxplot(x=categorical_var, y=continuous_var, data=df, ax=axes[0])
     axes[0].set_title('Box plot of {} for each category of {}'.format(continuous_var, categorical_var))
 
     # Violin plot of the continuous variable for each category of the categorical variable
-    sns.scatterplot(x=categorical_var, y=continuous_var, data=df, ax=axes[1], bins=10)
+    sns.scatterplot(x=categorical_var, y=continuous_var, data=df, ax=axes[1])
     axes[1].set_title('Scatter plot of {} for each category of {}'.format(continuous_var, categorical_var))
 
     # Histogram of the continuous variable for each category of the categorical variable
     for cat in df[categorical_var].unique():
-        sns.histplot(df[df[categorical_var] == cat][continuous_var], ax=axes[2], label=cat, kde=True, bins=10)
+        sns.histplot(df[df[categorical_var] == cat][continuous_var], ax=axes[2], label=cat, kde=True, bins=n)
     axes[2].set_title('Histogram of {} for each category of {}'.format(continuous_var, categorical_var))
     axes[2].legend(title=categorical_var)
 
