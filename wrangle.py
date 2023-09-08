@@ -22,19 +22,13 @@ def acquire_zillow():
     else: 
 
         query = '''
-                SELECT 
-                    bedroomcnt,
-                    bathroomcnt,
-                    calculatedfinishedsquarefeet,
-                    taxvaluedollarcnt,
-                    yearbuilt,
-                    taxamount,
-                    fips
-                FROM 
-                    properties_2017
-                WHERE 
-                    propertylandusetypeid = 261; -- 'Single Family Residential'
-                '''
+        SELECT p17.parcelid, bathroomcnt, bedroomcnt, calculatedfinishedsquarefeet, fullbathcnt, latitude, longitude, lotsizesquarefeet, regionidcounty,
+        regionidzip, roomcnt, yearbuilt, taxvaluedollarcnt, censustractandblock, fips
+        FROM properties_2017 AS p17
+        LEFT JOIN predictions_2017 AS pr17 ON p17.parcelid = pr17.parcelid
+        LEFT JOIN propertylandusetype AS plu ON p17.propertylandusetypeid = plu.propertylandusetypeid
+        WHERE plu.propertylandusetypeid = 261 AND YEAR(pr17.transactiondate) = 2017; -- 'Single Family Residential' and transactions in 2017
+        '''
 
         url = get_connection('zillow')
                 
@@ -59,27 +53,43 @@ def clean_zillow(df):
     Returns:
     - cleaned_df (DataFrame): Cleaned Zillow data.
     """
+
+    # Drop rows with duplicates
+    df = df[~df.duplicated(keep='first')]
     
-    # Drop rows with missing values in any column
+    # Drop rows with missing/null values in any column
     df = df.dropna()
 
     # Rename columns
-    df = df.rename(columns={'bedroomcnt': 'bedrooms', 'bathroomcnt': 'bathrooms', 'calculatedfinishedsquarefeet': 'area', 'taxvaluedollarcnt': 'tax_value', 'yearbuilt': 'year_built', 'taxamount': 'tax_amount'})
+    df = df.rename(columns={'bedroomcnt': 'bedrooms', 'bathroomcnt':'bathrooms', 
+                            'calculatedfinishedsquarefeet': 'area', 'taxvaluedollarcnt': 'home_value',
+                            'yearbuilt': 'year_built', 'fullbathcnt' : 'full_bath_cnt',
+                            'lotsizesquarefeet' : 'lot_area', 'regionidcounty' : 'region_id_county',
+                            'roomcnt' : 'room_cnt', 'censustractandblock' : 'census_tract_and_block'})
 
     # Convert selected columns to integer type
-    int_columns = ['fips', 'year_built', 'tax_value', 'area', 'bedrooms']
+    int_columns = ['fips', 'year_built', 'home_value', 'area', 'bedrooms', 'full_bath_cnt', 'room_cnt',
+                   'region_id_county', 'regionidzip', 'lot_area']
     df[int_columns] = df[int_columns].astype(int)
 
-    # Remove rows where bathroomcnt or bedroomcnt is 0.0
-    # df = df[(df.bedrooms != 0.0) & (df.bathrooms != 0.0)]
+    fips_to_state = {
+        6037: 'California',
+        6059: 'California',
+        6111: 'California',
+        # Add more mappings for other states as needed
+        }
 
-    # initial_df = {'county': ['LOS ANGELES', 'ORANGE', 'VENTURA'], 'fips' : [6037, 6059, 6111]}
+    # Mapped county names to fips code
+    fips_to_county = {
+        6037: 'Los Angeles County',
+        6059: 'Orange County',
+        6111: 'Ventura County',
+        # Add more mappings for other counties as needed
+        }
     
-    # df1=pd.DataFrame(initial_df)
-    
-    # df=df1.merge(df)
-    
-    # df.set_index(df['fips'], inplace=True)
+    # Use the map method to create new 'county' and 'state' columns based on 'fips' column
+    df['state'] = df['fips'].map(fips_to_state)
+    df['county'] = df['fips'].map(fips_to_county)
     
     return df
 
