@@ -139,7 +139,7 @@ def evaluate_correlation(x, y, a=0.05, method="Pearson"):
         
     else:
         
-        conclusion = (f"Fail to reject the null hypothesis.\n\n There is no significant linear correlation between {x.name} and {y.name}.")
+        conclusion = (f"Fail to reject the null hypothesis.\n\nThere is no significant linear correlation between {x.name} and {y.name}.")
 
     return correlation_coefficient, p_value, conclusion
 
