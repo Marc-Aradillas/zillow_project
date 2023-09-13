@@ -115,6 +115,13 @@ My initial hypothesis is that drivers of tax assessed property value will be the
 | *n-heat_ind*          | int32                | Numeric feature: n-heat_ind                                |
 | *n-prop_type*         | object               | Numeric feature: n-prop_type                               |
 
+Feature Engineered columns
+* *property_size* | Categorical | Size category of the property |
+* *Large* - Large-sized property
+* *Medium* - Medium-sized property
+* *Small* - Small-sized property
+
+
 
 FIPS County Codes:
 
