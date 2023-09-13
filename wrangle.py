@@ -13,7 +13,7 @@ filename = 'zillow_data.csv'
 
 # Acquire data.
 # ----------------------ACQUIRE FUNCTION---------------------------------
-def acquire_zillow_2():
+def acquire_zillow():
 
     if os.path.isfile(filename):
         
@@ -41,45 +41,10 @@ def acquire_zillow_2():
                 
         df = pd.read_sql(query, url)
 
-        # # save to csv
-        # df.to_csv(filename,index=False)
+        # save to csv
+        df.to_csv(filename,index=False)
 
         return df 
-
-
-
-
-
-# Acquire data.
-# ----------------------ACQUIRE FUNCTION---------------------------------
-def acquire_zillow():
-
-    if os.path.isfile(filename):
-        
-        return pd.read_csv(filename)
-        
-    else: 
-
-        query = '''
-        SELECT p17.parcelid, bathroomcnt, bedroomcnt, calculatedfinishedsquarefeet, fullbathcnt, latitude, longitude, lotsizesquarefeet,
-        regionidcounty, regionidzip, roomcnt, yearbuilt, taxvaluedollarcnt, censustractandblock, fips
-        FROM properties_2017 AS p17
-        LEFT JOIN predictions_2017 AS pr17 ON p17.parcelid = pr17.parcelid
-        LEFT JOIN propertylandusetype AS plu ON p17.propertylandusetypeid = plu.propertylandusetypeid
-        WHERE plu.propertylandusetypeid = 261 AND YEAR(pr17.transactiondate) = 2017; -- 'Single Family Residential' and transactions in 2017
-        '''
-
-        url = get_connection('zillow')
-                
-        df = pd.read_sql(query, url)
-
-        # # save to csv
-        # df.to_csv(filename,index=False)
-
-        return df 
-
-
-
 
 
 # ---------------------------CLEAN FUNCTION--------------------------
@@ -94,70 +59,12 @@ def clean_zillow(df):
     Returns:
     - df (DataFrame): Cleaned Zillow data.
     """
-
-    # Drop rows with duplicates
-    df = df[~df.duplicated(keep='first')]
-    
-    # Drop rows with missing/null values in any column
-    df = df.dropna()
-
-    # Rename columns
-    df = df.rename(columns={'parcelid' : 'parcel_id', 'bedroomcnt': 'bedrooms',
-                            'bathroomcnt':'bathrooms','calculatedfinishedsquarefeet': 'area',
-                            'taxvaluedollarcnt': 'home_value','yearbuilt': 'year_built', 
-                            'fullbathcnt' : 'full_bath_cnt','lotsizesquarefeet' : 'lot_area', 
-                            'regionidcounty' : 'region_id_county', 'roomcnt' : 'room_cnt', 
-                            'censustractandblock' : 'census_tract_and_block'})
-
-    # Convert selected columns to integer type
-    int_columns = ['fips', 'year_built', 'home_value', 'area', 'bedrooms', 'full_bath_cnt', 'room_cnt',
-                   'region_id_county', 'regionidzip', 'lot_area']
-    df[int_columns] = df[int_columns].astype(int)
-
-    fips_to_state = {
-        6037: 'California',
-        6059: 'California',
-        6111: 'California',
-        # Add more mappings for other states as needed
-        }
-
-    # Mapped county names to fips code
-    fips_to_county = {
-        6037: 'Los Angeles County',
-        6059: 'Orange County',
-        6111: 'Ventura County',
-        # Add more mappings for other counties as needed
-        }
-    
-    # Use the map method to create new 'county' and 'state' columns based on 'fips' column
-    df['state'] = df['fips'].map(fips_to_state)
-    df['county'] = df['fips'].map(fips_to_county)
-    
-    return df
-
-
-
-
-
-# ---------------------------CLEAN 2nd FUNCTION--------------------------
-# Prep data.
-def clean_zil(df):
-    """
-    Cleans the Zillow data.
-    
-    Args:
-    - df (DataFrame): Raw Zillow data.
-    
-    Returns:
-    - df (DataFrame): Cleaned Zillow data.
-    """
-
     # Pool features edits
-    df['poolcnt'].fillna(0, inplace=True)
+    df.poolcnt.fillna(0, inplace=True)
     df['hashottuborspa'].fillna(0, inplace=True)
     df['hashottuborspa'].replace(True, 1, inplace=True)
     df['poolsizesum'] = df['poolsizesum'].fillna(df[df['poolcnt'] == 1]['poolsizesum'].median())
-    df.loc[df['poolcnt'] == 0, 'poolsizesum'] = 0
+    df.loc[df.poolcnt==0, 'poolsizesum']=0
     df['pooltypeid2'].fillna(0, inplace=True)
     df['pooltypeid7'].fillna(0, inplace=True)
     df.drop('pooltypeid10', axis=1, inplace=True)
@@ -231,12 +138,12 @@ def clean_zil(df):
                             'propertylandusetypeid': 'property_landuse_type_id'})
 
     # Additional Features created reference: https://www.kaggle.com/code/nikunjm88/creating-additional-features/notebook
-    
     # living space
     df['n-life'] = 2023 - df['year_built']
     df['n-living_area_error'] = df['area'] / df['finished_square_feet_12']
     df['n-living_area_prop'] = df['area'] / df['lot_area']
     df['n-living_area_prop2'] = df['finished_square_feet_12'] / df['finished_sqft_15']
+
     # other space consideration and property bundle
     df['n-extra_space'] = df['lot_area'] - df['area']
     df['n-extra_space-2'] = df['finished_sqft_15'] - df['finished_square_feet_12']
@@ -244,17 +151,20 @@ def clean_zil(df):
     df['n-av_room_size'] = df['area'] / df['rooms']
     df['n-extra_rooms'] = df['rooms'] - df['n-total_rooms']
     df['n-gar_pool_ac'] = ((df['garage_car_cnt'] > 0) & (df['pool_type_id_7'] > 0) & (df['ac_type_id'] != 5)) * 1
+
     # latitude and longitude decimal palce error fix
     df["n-location"] = df["latitude"] + df["longitude"]
     df["n-location-2"] = df["latitude"] * df["longitude"]
     df["n-location-2round"] = df["n-location-2"].round(-4)
     df["n-latitude-round"] = df["latitude"].round(-4)
     df["n-longitude-round"] = df["longitude"].round(-4)
+
     # zip and county count mapping
     zip_count = df['region_id_zip'].value_counts().to_dict()
     df['n-zip_count'] = df['region_id_zip'].map(zip_count)
     region_count = df['region_id_county'].value_counts().to_dict()
     df['n-county_count'] = df['region_id_county'].map(region_count)
+
     # ac-heat/property typ consolidation
     df['n-ac_ind'] = (df['ac_type_id'] != 5) * 1
     df['n-heat_ind'] = (df['heating_or_system_type_id'] != 13) * 1
@@ -290,32 +200,34 @@ def clean_zil(df):
     # Use the map method to create new 'county' and 'state' columns based on 'fips' column
     df['state'] = df['fips'].map(fips_to_state)
     df['county'] = df['fips'].map(fips_to_county)
+
+    # One-hot encode the 'county' column
+    df = pd.get_dummies(df, columns=['county'], prefix='', prefix_sep='')
+
+    columns_to_convert = ['Los Angeles County', 'Orange County', 'Ventura County']
+    df[columns_to_convert] = df[columns_to_convert].astype(int)
+
+    # Define bin edges and labels
+    bin_edges = [0, 1000, 2000, float('inf')]
+    bin_labels = ['Small', 'Medium', 'Large']
     
+    # Create a new column 'property_size' with the categories
+    df['property_size'] = pd.cut(df['area'], bins=bin_edges, labels=bin_labels)
+    
+    # Create dummy variables for 'property_size'
+    dummies = pd.get_dummies(df['property_size'])
+    
+    # Concatenate the dummy variables with the original DataFrame
+    df = pd.concat([df, dummies], axis=1)
+    
+    # Drop the 'property_size' column if needed
+    df.drop('property_size', axis=1, inplace=True)
+    
+    # Convert the dummy variables to integers
+    columns_to_convert = ['Small', 'Medium', 'Large']
+    df[columns_to_convert] = df[columns_to_convert].astype(int)
+
     return df
-
-
-
-
-
-# ----------------------- WRANGLE ZILLOW ------------------------
-# wrapping Acquire and Prep functions into one.
-def wrangle_zillow_2():
-    """
-    Wrangles Zillow data by acquiring and cleaning it.
-    
-    Returns:
-    - df (DataFrame): Wrangled Zillow data.
-    """
-    # Acquire data
-    df = acquire_zillow_2()
-    
-    # Clean data
-    df = clean_zil(df)
-
-    # df.to_csv(filename, index=False)
-
-    return df
-
 
 # ----------------------- WRANGLE ZILLOW ------------------------
 # wrapping Acquire and Prep functions into one.
@@ -331,8 +243,6 @@ def wrangle_zillow():
     
     # Clean data
     df = clean_zillow(df)
-
-    # df.to_csv(filename, index=False)
 
     return df
 
@@ -352,11 +262,50 @@ def train_val_test(df, seed = 42):
     
     val, test = train_test_split(val_test, train_size = 0.5,
                                  random_state = seed)
+
     
     return train, val, test
 
 
-# ------------------------ SCALE DATA FUNCTION --------------------
+# ------------------------ SPLIT/SCALE FUNCTION -------------------------
+# train val test split/scale function
+def split_and_scale_data(df, seed=42):
+    """
+    Splits the data into train, validate, and test sets, and scales all numerical features.
+    
+    Parameters:
+    - df (dataframe): The input dataframe.
+    - seed (int): Random seed for reproducibility.
+
+    Returns:
+    - train_scaled, validate_scaled, test_scaled (dataframes): Scaled train, validate, and test sets.
+    """
+
+    # Split the data into train, validate, and test sets
+    train, val, test = train_val_test(df, seed)
+
+    # Extract the numerical features to scale (assuming all non-categorical columns are numerical)
+    numerical_features = df.select_dtypes(include=['number']).columns.tolist()
+
+    # Scale all numerical features using Min-Max scaling
+    scaler = MinMaxScaler()
+    scaler.fit(train[numerical_features])
+    train[numerical_features] = scaler.transform(train[numerical_features])
+    val[numerical_features] = scaler.transform(val[numerical_features])
+    test[numerical_features] = scaler.transform(test[numerical_features])
+
+    return train, val, test
+
+
+# ------------------------ XY SPLIT FUNCTION ----------------------
+# xy_split function to create usable subsets; reusable.
+def xy_split(df, col):
+    X = df.drop(columns=[col])
+    y = df[col]
+    return X, y
+
+
+# ------------------------ XY SPLIT TVT FUNCTION ----------------------
 def scale_data(train, val, test, to_scale):
     # make copies for scaling
     train_scaled = train.copy()
@@ -364,7 +313,7 @@ def scale_data(train, val, test, to_scale):
     test_scaled = test.copy()
 
     #make the thing
-    scaler = MinMaxScaler()
+    scaler = StandardScaler()
 
     #fit the thing
     scaler.fit(train[to_scale])
@@ -376,14 +325,3 @@ def scale_data(train, val, test, to_scale):
     
     return train_scaled, validate_scaled, test_scaled
 
-
-# ------------------------ XY SPLIT FUNCTION ----------------------
-# xy_split function to create usable subsets; reusable.
-def xy_split(df, col):
-    X = df.drop(columns=[col])
-    y = df[col]
-    return X, y
-
-# examples:
-# X_train, y_train = wrangle.xysplit(train, 'Species_setosa')
-# X_val, y_val = wrangle.xysplit(val, 'Species_setosa')

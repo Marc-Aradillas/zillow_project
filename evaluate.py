@@ -24,7 +24,8 @@ def plot_residuals(y, yhat):
     - yhat: Predicted values
     """
     residuals = yhat - y
-    plt.scatter(y, residuals, alpha=0.75, color='darkgray') # should be y because i want to plot actuals
+    plt.figure(figsize=(10, 6))
+    plt.scatter(y, residuals, alpha=0.75, color='orange') # should be y because i want to plot actuals
     plt.xlabel("Predicted Values")
     plt.ylabel("Residuals")
     plt.title("Model Residual Plot")
@@ -136,50 +137,3 @@ def better_than_baseline(y, yhat):
 # print(f"\n-------------------------------------")
 
 # print(f"\nIs the model better than the baseline? {evaluate.better_than_baseline(preds.y_actual, preds.y_hat)}")
-
-
-
-
-
-
-# -------------------------------------------------- Extra functions--------
-
-# may include
-
-def prepare_data(train, val, X_col, y_col):
-    # Split the data into subsets for train and validation
-    X_train = train[[X_col]]
-    y_train = train[y_col]
-
-    X_val = val[[X_col]]
-    y_val = val[y_col]
-
-    return X_train, y_train, X_val, y_val
-
-def create_baseline_predictions(y_train):
-    # Calculate the baseline prediction using median
-    y_baseline = y_train.median()
-    preds = pd.DataFrame({'y_actual': y_train, 'y_baseline': y_baseline})
-    return preds
-
-def train_linear_regression_model(X_train, y_train):
-    # Train a linear regression model
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-    return model
-
-def predict_with_model(model, X_train):
-    # Make predictions using the trained model
-    y_hat = model.predict(X_train)
-    return y_hat
-
-
-# train_data =  # Your training data
-# val_data =  # Your validation data
-# X_column = 'total_bill'  # Your feature column name
-# y_column = 'tip'  # Your target column name
-
-# X_train, y_train, X_val, y_val = prepare_data(train_data, val_data, X_column, y_column)
-# baseline_preds = create_baseline_predictions(y_train)
-# trained_model = train_linear_regression_model(X_train, y_train)
-# model_preds = predict_with_model(trained_model, X_train)

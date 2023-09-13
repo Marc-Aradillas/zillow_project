@@ -51,6 +51,47 @@ def select_kbest(X, y, k):
 
 
 
+import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.model_selection import train_test_split
+from wrangle import acquire_zillow, clean_zillow, wrangle_zillow, train_val_test, split_and_scale_data, xy_split
+
+
+def select_k_features(data, target_col='home_value', k=5):
+    # Wrangle your data
+    df = wrangle_zillow()
+
+    # Drop categorical features (assuming regression model)
+    df = df.drop(columns=['property_county_landuse_code', 'property_zoning_desc', 'n-prop_type', 'n-av_room_size', 'state'])
+
+    # Split data
+    train, val, test = train_val_test(df)
+
+    # Split scale data
+    X_train, y_train = xy_split(train, target_col)
+    X_val, y_val = xy_split(val, target_col)
+    X_test, y_test = xy_split(test, target_col)
+
+    # Create a SelectKBest instance with k specified
+    k_best = SelectKBest(score_func=f_regression, k=k)
+
+    # Fit and transform your training data
+    X_train_selected = k_best.fit_transform(X_train, y_train)
+
+    # Get the indices of the selected features
+    selected_indices = k_best.get_support(indices=True)
+
+    # Get the names of the selected features
+    selected_feature_names = X_train.columns[selected_indices]
+
+    return selected_feature_names
+
+# Example usage:
+# selected_features = wrangle_and_select_features(data)
+# print(selected_features)
+
+
+
 # ________________________________ RFE function ____________________________________
 
 def rfe_(X, y, n):
