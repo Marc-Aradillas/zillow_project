@@ -1,5 +1,3 @@
-Zillow Project
-=============================
 <!--Created Anchor links to navigate read me better-->
 
 - [Project Description](#project-description)
@@ -15,103 +13,152 @@ Zillow Project
 
 ----------------------------------
 
-# Project Description
-* Analyzing Customer Churn Factors for Predictive Insights
+# Project Zillow
 
-*The Telco Telecommunication company provides phone, internet, streaming and other add-on services to their customers. This project will involve analysis of the various elements of customer churns to determine if they increase or decrease the probability of customer churn*
+Predict the tax assessed property value of Zillow Single Family Residential properties with transaction date in 2017
 
-## Project Goal
+### Project Description
 
-* Identify drivers for churn of Telco customers
-* Utilze drivers to develop a Machine Learning model to classify churn as a customer ending their contract or not ending their contract with Telco.
-* The details of could provide further insight on which customer elements contribute to or detract from a customer churning.
+As the leading real estate platform in the United States, Zillow and its affiliated services provide customers with an accessible and user-friendly experience for selling, buying, renting, and financing properties. With a commitment to transparency and delivering nearly seamless end-to-end service, I have undertaken an investigation into the various factors that influence tax-assessed property values.
+
+### Project Goal
+
+* Identify drivers of property value.
+* Use drivers to develop a machine learning model to predict Single Family Residential property value.
+* Develop understanding of how Single Family properties are tax assessed for their property value.
 
 ### Initial Thoughts
 
-My initial hypothesis is that the drive of churn may be impacted by customers not opting for online security as part of their contract services.
+My initial hypothesis is that drivers of tax assessed property value will be the elements like number of different room types, square feet of different property areas, and year built.
 
-### The Plan
+## The Plan
 
-* **Acquire data from Codeup MySQL Database**
-  
-* **Prepare data**
-    * Feature Engineer columns from existing data
-        * online_security
-        * online_backup
-        * device_protection
-        * tech_support
-        * streaming_tv
-        * streaming_movies
-        * tech_support
-      
-* **Explore data in search of impactful drivers of churn**
-    * Answer the following initial questions,
-        * Is Churn independent from online Security?
-        * Is Churn independent from internet service types?
-        * Is there a difference in churn based on monthly charges? Total charges?
-        * Does having more than one add-on affect churn?
-        * Does the contract type affect churn?
-          
-* **Develop a Model to predict if a customer will churn**
-    * Use drivers identified in explore to help build predictive models of different types
-    * Evaluate models on train and validate data
-    * Select the best model based on highest accuracy
-    * Evaluate the best performing model on test data
-      
-* **Draw conclusions**
-
+* Acquire data from Codeup MySQL DB
+* Prepare data
+  * Create Engineered columns from existing data
+* Explore data in search of drivers of property value
+  * Answer the following initial questions
+	* Do bedrooms have a relationship with home value?
+	* Does home value have a relationship with the year property was built?
+	* Does home value have a correlation with area?  
+	* Does home value have a correlation with the property lot area?  
+* Develop a Model to predict property value
+  * Use drivers identified in explore to help build predictive models of different types
+  * Feature engineer data, no preprocess to include all values.
+  * Evaluate models on train and validate data
+  * Select the best model based on $RMSE$ and $R^2$
+  * Evaluate the best model on test data
+* Draw conclusions
 
 ## Data Dictionary
 
-|**Feature**|**Values**|**Definition**|
-|:--------------------:|:---------------------------:|:-------------------------------------------------------- |
-| *customer_id*           | Alpha-numeric               | Unique ID for each customer                              |
-| *gender*                | Female/Male                 | Gender of customer                                       |
-| *senior_citizen*        | True=1/False=0              | Whether customer is a senior citizen or not              |
-| *partner*               | True=1/False=0              | True=1/False=0, whether customer has a partner or not    |
-| *dependents*            | True=1/False=0              | True=1/False=0, whether customer has dependents or not   |
-| *phone_service*         | True=1/False=0              | True=1/False=0, whether customer has phone service or not|
-| *multiple_lines*        | Yes/No/No phone service     | Whether customer has multiple lines or not               |
-| *internet_service_type* | None/DSL/Fiber Optic        | Which internet service customer has                      |
-| *online_security*       | Yes/No/No internet service  | Whether customer has online_security                     |
-| *online_backup*         | Yes/No/No internet service  | Whether customer has online_backup                       |
-| *device_protection*     | Yes/No/No internet service  | Whether customer has device_protection                   |
-| *tech_support*          | Yes/No/No internet service  | Whether customer has tech_support                        |
-| *streaming_tv*          | Yes/No/No internet service  | Whether customer has streaming_tv                        |
-| *streaming_movies*      | Yes/No/No internet service  | Whether customer has streaming_movies                    |
-| *contract_type*         | 3 options                   | Month-to-Month/One-year/Two-year, term of contract       |
-| *payment_type*          | 4 options (2 auto)          | Customer payment method                                  |
-| *paperless_billing*     | True=1/False=0              | Whether a customer has paperless billing enabled         |
-| *monthly_charges*       | Numeric USD                 | Amount customer is charged monthly                       |
-| *total_charges*         | Numeric USD                 | Total amount customer has been charged                   |
-| *tenure*                | Numeric                     | Number of months customer has stayed                     |
-| *churn* (target)        | True=1/False=0              | Whether or not the customer has churned                  |
-| *Additional Features*   | True=1/False=0              | Encoded values for categorical data                      |
+|**Feature**|**Data Type**|**Definition**|
+|:--------------------:|:-------------------:|:-------------------------------------------------------- |
+| *parcel_id*           | int64                | Unique parcel identifier                                   |
+| *latitude*            | float64              | Latitude coordinate of the property                        |
+| *longitude*           | float64              | Longitude coordinate of the property                       |
+| *lot_area*            | int32                | Area of the property lot in square feet                    |
+| *region_id_county*    | int32                | Identifier for the county where the property is located    |
+| *region_id_zip*       | int32                | Identifier for the zip code where the property is located   |
+| *property_county_landuse_code* | object     | Land use code for the county of the property          |
+| *property_zoning_desc* | object             | Zoning description for the property                        |
+| *bathrooms*           | float64              | Number of bathrooms in the property                        |
+| *bedrooms*            | int32                | Number of bedrooms in the property                         |
+| *calc_bath_count*     | float64              | Calculated bathroom count                                   |
+| *area*                | int32                | Calculated area of the property in square feet              |
+| *basement_sqft*       | float64              | Square footage of the basement                              |
+| *finished_square_feet_12* | float64          | Square footage of finished living area                      |
+| *finished_sqft_15*    | object               | Square footage of finished living area                      |
+| *finishedsqft50*      | float64              | Square footage of finished living area (50th percentile)    |
+| *fips*                | int32                | Federal Information Processing Standards (FIPS) code        |
+| *rooms*               | int32                | Number of rooms in the property                             |
+| *num_stories*         | float64              | Number of stories in the property                           |
+| *year_built*          | int32                | Year the property was built                                 |
+| *property_landuse_type_id* | int64           | Identifier for the property's land use type               |
+| *ac_type_id*          | float64              | Identifier for the air conditioning type                   |
+| *building_quality_type_id* | float64         | Identifier for the building quality type                  |
+| *heating_or_system_type_id* | float64        | Identifier for the heating or system type                 |
+| *deck_type_id*        | float64              | Identifier for the deck type                                |
+| *unit_cnt*            | float64              | Count of units on the property                              |
+| *garage_car_cnt*      | float64              | Count of garage cars                                       |
+| *garage_total_sqft*   | float64              | Total square footage of the garage                         |
+| *pool_cnt*            | float64              | Count of pools on the property                              |
+| *pool_size_sum*       | float64              | Sum of pool sizes in square feet                            |
+| *pool_type_id_2*      | float64              | Identifier for pool type 2                                  |
+| *pool_type_id_7*      | float64              | Identifier for pool type 7                                  |
+| *fire_place_cnt*      | float64              | Count of fireplaces in the property                         |
+| *fire_place_flag*     | int64                | Flag indicating the presence of a fireplace                |
+| *has_hot_tub_or_spa*  | float64              | Indicates if the property has a hot tub or spa              |
+| *patio_sqft*          | float64              | Square footage of the patio                                 |
+| *storage_sqft*        | float64              | Square footage of storage                                   |
+| *home_value*          | int32                | Tax assessed property value                                 |
+| *tax_delinquency_flag* | int64              | Flag indicating tax delinquency                             |
+| *raw_census_tract_and_block* | float64      | Raw census tract and block identifier                     |
+| *n-life*              | float64              | Numeric feature: n-life                                    |
+| *n-living_area_error* | float64              | Numeric feature: n-living_area_error                       |
+| *n-living_area_prop*  | float64              | Numeric feature: n-living_area_prop                        |
+| *n-living_area_prop2* | object               | Numeric feature: n-living_area_prop2                       |
+| *n-extra_space*       | float64              | Numeric feature: n-extra_space                             |
+| *n-extra_space-2*     | object               | Numeric feature: n-extra_space-2                           |
+| *n-total_rooms*       | float64              | Numeric feature: n-total_rooms                             |
+| *n-av_room_size*      | float64              | Numeric feature: n-av_room_size                            |
+| *n-extra_rooms*       | float64              | Numeric feature: n-extra_rooms                             |
+| *n-gar_pool_ac*       | int32                | Numeric feature: n-gar_pool_ac                             |
+| *n-location*          | float64              | Numeric feature: n-location                                |
+| *n-location-2*        | float64              | Numeric feature: n-location-2                              |
+| *n-location-2round*   | float64              | Numeric feature: n-location-2round                         |
+| *n-latitude-round*    | float64              | Numeric feature: n-latitude-round                          |
+| *n-longitude-round*   | float64              | Numeric feature: n-longitude-round                         |
+| *n-zip_count*         | int64                | Numeric feature: n-zip_count                               |
+| *n-county_count*      | int64                | Numeric feature: n-county_count                            |
+| *n-ac_ind*            | int32                | Numeric feature: n-ac_ind                                  |
+| *n-heat_ind*          | int32                | Numeric feature: n-heat_ind                                |
+| *n-prop_type*         | object               | Numeric feature: n-prop_type                               |
 
+Feature Engineered columns
+* *property_size* | Categorical | Size category of the property |
+* *Large* - Large-sized property
+* *Medium* - Medium-sized property
+* *Small* - Small-sized property
+
+
+
+FIPS County Codes:
+
+* 06037 = LA County, CA
+* 06059 = Orange County, CA
+* 06111 = Ventura County, CA
 
 ## Steps to Reproduce
 
-1) Clone this repo following the code link at the top
-2) If you have granted access to the Codeup MySQL DB:
-   - Save **env.py** in the repo with `user`, `password`, and `host` variables and add to .gitignore file
-   - Run jupyter notebook or VS Code file
-3) If you don't have granted access:
-   - Request access from Codeup staff
-   - Return to step 2
+1) Clone this repo
+2) If you have access to the Codeup MySQL DB:
+   - Save **env.py** in the repo w/ `user`, `password`, and `host` variables
+   - Run notebook
+3) If you don't have access:
+   - Request access from Codeup
+   - Do step 2
 
-## Conclusions
+# Conclusion
 
-### Takeaways and Key Findings
-* Phone service was found to be a driver of churn.
-* Internet service was not a driver of churn.
-* Monthly charges was found to be a driver of churn, higher charges for churn.
-  
-### Recommendations
+## Takeaways and Key Findings
+
+- Home details such as the calculated area of the home, lot area, number of bedrooms, number of bathrooms, and year built are significant drivers of home value.
+- Calculated area is the most important feature across all factors.
+- Higher-priced and larger single residential family properties appear to be concentrated in Ventura County, while smaller homes are spread across Orange and Los Angeles counties.
+- Larger living areas correlate with higher property values.
+- Location plays a crucial role in property value.
 
 
-* Check with the finance department to figure out if there are issues with the phone service option.
-* Check to see if multiple phone lines have a impact on churn.
+## Model Improvement
+- The model still requires further improvement.
 
-### Next Steps
+# Recommendations and Next Steps
 
-* Given more time I could check what is causing the phone service leading to high churn.
+- If the data contained detailed of hard appliances attached or amenities homebuyers seek in single family residential properties maybe this could affect property value.
+
+- Given more time, the following actions could be considered:
+  - Gather more data to improve model performance.
+  - Feature engineer new variables to enhance model understanding.
+      - trasnaction dates for value over time
+  - Fine-tune model parameters for better performance.
