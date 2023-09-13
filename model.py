@@ -248,7 +248,7 @@ def model_2(df, target_column, X_val, y_val, early_stopping_rounds=10, params=No
     xgb = XGBRegressor(**params)
     
     # Fit the model to your training data with eval_set and verbose
-    xgb.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=True, sample_weight=sample_weights)
+    xgb.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False, sample_weight=sample_weights)
 
     # Access the best iteration and best score
     best_iteration = xgb.best_iteration
@@ -418,7 +418,7 @@ def final_model(df, target_column, X_test, y_test, early_stopping_rounds=10, par
     xgb = XGBRegressor(**params)
     
     # Fit the model to your training data with eval_set and verbose
-    xgb.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=True, sample_weight=sample_weights)
+    xgb.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False, sample_weight=sample_weights)
 
     # Access the best iteration and best score
     best_iteration = xgb.best_iteration
