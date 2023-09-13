@@ -160,9 +160,6 @@ def wrangle_zillow_and_train_model():
     print(f"\nBaseline RMSE: {RMSE_baseline:.2f}\n")
     print(f"\n-------------------------------------")
 
-    # Check if the model is better than the baseline
-    print(f"\nIs the model better than the baseline? {better_than_baseline(preds.y_actual, preds.y_hat)}")
-
 # ============================ model function =============================
 def model_xy():
 # Wrangle the data
@@ -274,7 +271,7 @@ def model_2(df, target_column, X_val, y_val, early_stopping_rounds=10, params=No
     }
     
     # Print the metrics within the function
-    print(f"\n-------------------------------------")
+    print(f"\n\n\n-------------------------------------")
     print(f"\nValidation RMSE: {val_rmse:.2f}")
     print(f"\n-------------------------------------")
     print(f"\nValidation R-squared (R2): {val_r2:.2f}")
@@ -452,7 +449,7 @@ def final_model(df, target_column, X_test, y_test, early_stopping_rounds=10, par
     }
     
     # Print the metrics within the function
-    print(f"\n-------------------------------------")
+    print(f"\n\n\n-------------------------------------")
     print(f"\nTest RMSE: {test_rmse:.2f}")
     print(f"\n-------------------------------------")
     print(f"\nTest R-squared (R2): {test_r2:.2f}")

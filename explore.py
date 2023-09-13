@@ -217,8 +217,8 @@ def analysis_4(data):
 
     # Determine the conclusion based on the p-value
     if p_value < 0.05:
-        conclusion = 'There is a statistically significant correlation between Lot Area and Home Value.'
-    else:
         conclusion = 'There is no statistically significant correlation between Lot Area and Home Value.'
+    else:
+        conclusion = 'There is statistically significant correlation between Lot Area and Home Value.'
 
     print(f'\n\n{conclusion}\n\nCorrelation Coefficient: {correlation_coefficient:.4f}\n\np-value: {p_value}\n\n')
