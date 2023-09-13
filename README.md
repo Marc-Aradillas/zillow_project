@@ -1,4 +1,3 @@
-Zillow Project
 =============================
 <!--Created Anchor links to navigate read me better-->
 
@@ -15,51 +14,41 @@ Zillow Project
 
 ----------------------------------
 
-# Project Description
-* Analyzing Customer Churn Factors for Predictive Insights
+# Project Zillow
 
-*The Telco Telecommunication company provides phone, internet, streaming and other add-on services to their customers. This project will involve analysis of the various elements of customer churns to determine if they increase or decrease the probability of customer churn*
+Predict the tax assessed property value of Zillow Single Family Residential properties with transaction date in 2017
 
-## Project Goal
+### Project Description
 
-* Identify drivers for churn of Telco customers
-* Utilze drivers to develop a Machine Learning model to classify churn as a customer ending their contract or not ending their contract with Telco.
-* The details of could provide further insight on which customer elements contribute to or detract from a customer churning.
+As the most-visited real estate website in the United States, Zillow and its affiliates offer customers an on-demand experience for selling, buying, renting and financing with transparency and nearly seamless end-to-end service. I have decided to look into the different elements that determine tax assessed property value.
+
+### Project Goal
+
+* Discover drivers of property value
+* Use drivers to develop a machine learning model to predict property value
+* This information could be used to further our understanding of how Single Family properties are tax assessed for their property value
 
 ### Initial Thoughts
 
-My initial hypothesis is that the drive of churn may be impacted by customers not opting for online security as part of their contract services.
+My initial hypothesis is that drivers of tax assessed property value will be the elements like number of rooms, square feet, and location.
 
-### The Plan
+## The Plan
 
-* **Acquire data from Codeup MySQL Database**
-  
-* **Prepare data**
-    * Feature Engineer columns from existing data
-        * online_security
-        * online_backup
-        * device_protection
-        * tech_support
-        * streaming_tv
-        * streaming_movies
-        * tech_support
-      
-* **Explore data in search of impactful drivers of churn**
-    * Answer the following initial questions,
-        * Is Churn independent from online Security?
-        * Is Churn independent from internet service types?
-        * Is there a difference in churn based on monthly charges? Total charges?
-        * Does having more than one add-on affect churn?
-        * Does the contract type affect churn?
-          
-* **Develop a Model to predict if a customer will churn**
-    * Use drivers identified in explore to help build predictive models of different types
-    * Evaluate models on train and validate data
-    * Select the best model based on highest accuracy
-    * Evaluate the best performing model on test data
-      
-* **Draw conclusions**
-
+* Acquire data from Codeup MySQL DB
+* Prepare data
+  * Create Engineered columns from existing data
+* Explore data in search of drivers of property value
+  * Answer the following initial questions
+    * Is there a correlation between area and property value?
+    * Is there a correlation between age and property value?
+    * Is there a correlation between the room count and property value?
+    * Is there a difference in average property value between counties?
+* Develop a Model to predict property value
+  * Use drivers identified in explore to help build predictive models of different types
+  * Evaluate models on train and validate data
+  * Select the best model based on $RMSE$ and $R^2$
+  * Evaluate the best model on test data
+* Draw conclusions
 
 ## Data Dictionary
 
@@ -88,30 +77,34 @@ My initial hypothesis is that the drive of churn may be impacted by customers no
 | *churn* (target)        | True=1/False=0              | Whether or not the customer has churned                  |
 | *Additional Features*   | True=1/False=0              | Encoded values for categorical data                      |
 
+FIPS County Codes:
+
+* 06037 = LA County, CA
+* 06059 = Orange County, CA
+* 06111 = Ventura County, CA
 
 ## Steps to Reproduce
 
-1) Clone this repo following the code link at the top
-2) If you have granted access to the Codeup MySQL DB:
-   - Save **env.py** in the repo with `user`, `password`, and `host` variables and add to .gitignore file
-   - Run jupyter notebook or VS Code file
-3) If you don't have granted access:
-   - Request access from Codeup staff
-   - Return to step 2
+1) Clone this repo
+2) If you have access to the Codeup MySQL DB:
+   - Save **env.py** in the repo w/ `user`, `password`, and `host` variables
+   - Run notebook
+3) If you don't have access:
+   - Request access from Codeup
+   - Do step 2
 
-## Conclusions
+# Conclusions
 
-### Takeaways and Key Findings
-* Phone service was found to be a driver of churn.
-* Internet service was not a driver of churn.
-* Monthly charges was found to be a driver of churn, higher charges for churn.
-  
-### Recommendations
+#### Takeaways and Key Findings
 
+* The younger the property the better for property value
+* The bigger the living area the bigger the property value
+* Location matters for property value
+* Model still needs improvement
 
-* Check with the finance department to figure out if there are issues with the phone service option.
-* Check to see if multiple phone lines have a impact on churn.
+### Recommendations and Next Steps
 
-### Next Steps
-
-* Given more time I could check what is causing the phone service leading to high churn.
+* It would nice to have the data to check if the included appliances or the type of heating services (gas or electric) of the property would affect property value
+* More time is needed to work on features to better improve the model
+    - latitude and longitude could hopefully give insights into cities and neighborhoods with higher or lower property values
+    - pools and garages could also be looked into
