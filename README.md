@@ -19,7 +19,7 @@ Predict the tax assessed property value of Zillow Single Family Residential prop
 
 ### Project Description
 
-As the most-visited real estate website in the United States, Zillow and its affiliates offer customers an on-demand experience for selling, buying, renting and financing with transparency and nearly seamless end-to-end service. I have decided to look into the different elements that determine tax assessed property value.
+As the leading real estate platform in the United States, Zillow and its affiliated services provide customers with an accessible and user-friendly experience for selling, buying, renting, and financing properties. With a commitment to transparency and delivering nearly seamless end-to-end service, I have undertaken an investigation into the various factors that influence tax-assessed property values.
 
 ### Project Goal
 
